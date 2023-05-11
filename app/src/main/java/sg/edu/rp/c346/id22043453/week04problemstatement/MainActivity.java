@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView tvName;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     RadioButton rbNonSmoking;
     Button btnBook;
     Button btnReset;
+    TextView tvDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +43,48 @@ public class MainActivity extends AppCompatActivity {
         rbNonSmoking = findViewById(R.id.radioButtonNonSmoking);
         btnBook = findViewById(R.id.buttonBook);
         btnReset = findViewById(R.id.buttonReset);
+        tvDisplay = findViewById(R.id.textViewDisplay);
+
+        // Set default date and time
+        tp.setHour(19);
+        tp.setMinute(30);
+        dp.updateDate(2020, 6-1, 1);
 
 
         btnBook.setOnClickListener(new View.OnClickListener() {
-
-            String strName = tvName.getText().toString();
-            String strContactNum = tvContactNum.getText().toString();
-            int intGrpSize = Integer.parseInt(tvGroupSize.getText().toString());
-
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, strName + strContactNum + intGrpSize, Toast.LENGTH_LONG).show();
+                String strName = tvName.getText().toString();
+                String strContactNum = tvContactNum.getText().toString();
+                String intGrpSize = tvGroupSize.getText().toString();
+                int hour = tp.getHour();
+                int minute = tp.getMinute();
+                int year = dp.getYear();
+                int month = dp.getMonth();
+                int dayOfMonth = dp.getDayOfMonth();
+                boolean isSmoking = rgSmoking.isClickable();
+
+                StringBuilder displayInfo = new StringBuilder();
+                displayInfo.append("Name: ").append(strName).append("\n");
+                displayInfo.append("Mobile: ").append(strContactNum).append("\n");
+                displayInfo.append("Group Size: ").append(intGrpSize).append("\n");
+                displayInfo.append("Date: ").append(dayOfMonth).append("/").append(month).append("/").append(year).append("\n");
+                displayInfo.append("Time: ").append(String.format(Locale.getDefault(), "%02d:%02d", hour, minute)).append("\n");
+                displayInfo.append("Smoking Area: ").append(isSmoking ? "Yes" : "No");
+
+                // Set the textview to visible
+                tvDisplay.setText(displayInfo.toString());
+                tvDisplay.setVisibility(View.VISIBLE);
+
+                // Set how long does the textview can be shown
+                tvDisplay.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvDisplay.setVisibility(View.GONE);
+                    }
+                }, 5000);
+
+                Toast.makeText(MainActivity.this, "Inputs successfully.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -65,9 +99,11 @@ public class MainActivity extends AppCompatActivity {
                 tvGroupSize.setText("");
                 rbSmoking.setChecked(false);
                 rbNonSmoking.setChecked(false);
-                tp.setHour(7);
+                tp.setHour(19);
                 tp.setMinute(30);
-                dp.updateDate(2020, 6, 1);
+                dp.updateDate(2020, 6-1, 1);
+
+                Toast.makeText(MainActivity.this, "Inputs cleared.", Toast.LENGTH_SHORT).show();
             }
         });
 
